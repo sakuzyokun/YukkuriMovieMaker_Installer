@@ -4,8 +4,8 @@ setlocal EnableDelayedExpansion
 :: --- 管理者権限の確認と昇格 ---
 fsutil dirty query %systemdrive% >nul 2>&1
 if errorlevel 1 (
-  echo 管理者権限が必要です。再起動します...
-  powershell -Command "Start-Process '%~f0' -Verb runAs"
+  echo 管理者権限が必要です。再実行します...
+  powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
   exit /b
 )
 
