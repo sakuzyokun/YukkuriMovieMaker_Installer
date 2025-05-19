@@ -1,83 +1,85 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-:: --- ŠÇ—ŽÒŒ ŒÀ‚ÌŠm”F‚Æ¸Ši ---
-fsutil dirty query %systemdrive% >nul 2>&1
-if errorlevel 1 (
-  echo ŠÇ—ŽÒŒ ŒÀ‚ª•K—v‚Å‚·BÄŽÀs‚µ‚Ü‚·...
-  powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
-  exit /b
+:: --- ç®¡ç†è€…æ¨©é™ã®ç¢ºèªã¨æ˜‡æ ¼ ---
+>nul 2>&1 net session
+if %errorlevel% neq 0 (
+    echo ç®¡ç†è€…æ¨©é™ãŒå¿…è¦ã§ã™ã€‚å†å®Ÿè¡Œã—ã¾ã™...
+    mshta "javascript:var shell = new ActiveXObject('Shell.Application'); shell.ShellExecute('%~f0', '', '', 'runas', 1);close();"
+    exit /b
 )
 
-:: --- Ý’è ---
+:: --- è¨­å®š ---
 set "REPO=manju-summoner/YukkuriMovieMaker4"
+set "API=https://api.github.com/repos/%REPO%/releases/latest"
 set "INSTALLDIR=C:\Temp\YMM4"
 set "ZIPFILE=%TEMP%\YMM4_latest.zip"
 set "EXE=%INSTALLDIR%\YukkuriMovieMaker4.exe"
 set "DESKTOP=%USERPROFILE%\Desktop"
 set "STARTMENU=%APPDATA%\Microsoft\Windows\Start Menu\Programs"
 
-:: --- ‚·‚Å‚ÉƒCƒ“ƒXƒg[ƒ‹Ï‚Ý‚©Šm”F ---
+:: --- ã™ã§ã«ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«æ¸ˆã¿ã‹ç¢ºèª ---
 if exist "%EXE%" (
-  set /p REINSTALL="ƒCƒ“ƒXƒg[ƒ‹‚ªŠ®—¹‚µ‚Ä‚¢‚Ü‚·IÄƒCƒ“ƒXƒg[ƒ‹‚µ‚Ü‚·‚©H (y/n): "
-  if /i not "%REINSTALL%"=="y" (
-    echo ’†Ž~‚µ‚Ü‚µ‚½B
-    pause
-    exit /b
-  )
+    set /p REINSTALL="ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«æ¸ˆã¿ã§ã™ã€‚å†ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã—ã¾ã™ã‹ï¼Ÿ (y/n): "
+    if /i not "!REINSTALL!"=="y" (
+        echo ä¸­æ­¢ã—ã¾ã—ãŸã€‚
+        pause
+        exit /b
+    )
+    rmdir /s /q "%INSTALLDIR%"
 )
 
-:: --- GitHub API‚ÅÅVZIP‚ÌURLŽæ“¾ ---
-echo [1/5] ÅVƒo[ƒWƒ‡ƒ“‚ÌŽæ“¾...
-for /f "delims=" %%A in ('powershell -Command ^
-  "(Invoke-WebRequest -UseBasicParsing https://api.github.com/repos/%REPO%/releases/latest).Content |
-   ConvertFrom-Json |
-   Select-Object -ExpandProperty assets |
-   Where-Object { $_.name -like '*.zip' } |
-   Select-Object -First 1 -ExpandProperty browser_download_url"') do (
-   set "DOWNLOAD_URL=%%A"
+:: --- æœ€æ–°ãƒªãƒªãƒ¼ã‚¹URLã‚’curl + findstrã§å–å¾— ---
+echo [1/5] ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰URLã‚’å–å¾—ä¸­...
+curl -s %API% > "%TEMP%\ymm_api.json"
+for /f "delims=" %%A in ('findstr /i "browser_download_url.*\.zip" "%TEMP%\ymm_api.json"') do (
+    set "DOWNLOAD_LINE=%%A"
 )
-
-if not defined DOWNLOAD_URL (
-  echo ƒGƒ‰[: ƒ_ƒEƒ“ƒ[ƒhURL‚ðŽæ“¾‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½B
-  pause
-  exit /b 1
+for /f "tokens=2 delims=:" %%B in ("!DOWNLOAD_LINE!") do (
+    set "URL=%%B"
 )
+set "URL=!URL:~2,-2!"
 
-:: --- ƒ_ƒEƒ“ƒ[ƒh ---
-echo [2/5] ÅV”Å‚ðƒ_ƒEƒ“ƒ[ƒh’†...
-powershell -Command "Invoke-WebRequest -Uri '!DOWNLOAD_URL!' -OutFile '%ZIPFILE%'"
+:: --- ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ ---
+echo [2/5] æœ€æ–°ç‰ˆã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ä¸­...
+curl -L -o "%ZIPFILE%" "!URL!"
 
-:: --- ‰ð“€æì¬ ---
-if exist "%INSTALLDIR%" rmdir /s /q "%INSTALLDIR%"
-mkdir "%INSTALLDIR%" >nul 2>&1
+:: --- è§£å‡ ---
+echo [3/5] è§£å‡ä¸­...
+mkdir "%INSTALLDIR%" >nul
+tar -xf "%ZIPFILE%" -C "%INSTALLDIR%"
 
-:: --- ‰ð“€ ---
-echo [3/5] ‰ð“€’†...
-powershell -Command "Expand-Archive -Path '%ZIPFILE%' -DestinationPath '%INSTALLDIR%' -Force"
-
-:: --- ZIPíœ ---
 del "%ZIPFILE%" >nul
+del "%TEMP%\ymm_api.json" >nul
 
-:: --- ƒVƒ‡[ƒgƒJƒbƒgì¬‚ðŠm”F ---
-set /p MKDESKTOP="ƒfƒXƒNƒgƒbƒv‚ÉƒVƒ‡[ƒgƒJƒbƒg‚ðì¬‚µ‚Ü‚·‚©H (y/n): "
+:: --- ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆä½œæˆç¢ºèª ---
+set /p MKDESKTOP="ãƒ‡ã‚¹ã‚¯ãƒˆãƒƒãƒ—ã«ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã‚’ä½œæˆã—ã¾ã™ã‹ï¼Ÿ (y/n): "
 if /i "%MKDESKTOP%"=="y" (
-  powershell -Command ^
-    "$s=(New-Object -COM WScript.Shell).CreateShortcut('%DESKTOP%\YMM4.lnk');" ^
-    "$s.TargetPath='%EXE%'; $s.Save()"
+    call :MakeShortcut "%EXE%" "%DESKTOP%\YMM4.lnk"
 )
 
-set /p MKSTART="ƒXƒ^[ƒgƒƒjƒ…[‚ÉƒVƒ‡[ƒgƒJƒbƒg‚ðì¬‚µ‚Ü‚·‚©H (y/n): "
+set /p MKSTART="ã‚¹ã‚¿ãƒ¼ãƒˆãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã‚’ä½œæˆã—ã¾ã™ã‹ï¼Ÿ (y/n): "
 if /i "%MKSTART%"=="y" (
-  powershell -Command ^
-    "$s=(New-Object -COM WScript.Shell).CreateShortcut('%STARTMENU%\YMM4.lnk');" ^
-    "$s.TargetPath='%EXE%'; $s.Save()"
+    call :MakeShortcut "%EXE%" "%STARTMENU%\YMM4.lnk"
 )
 
-:: --- ‹N“® ---
-echo [4/5] YMM4‚ð‹N“®‚µ‚Ü‚·...
+:: --- èµ·å‹• ---
+echo [4/5] YMM4ã‚’èµ·å‹•ã—ã¾ã™...
 start "" "%EXE%"
-
-echo [5/5] Š®—¹‚µ‚Ü‚µ‚½I
+echo [5/5] å®Œäº†ã—ã¾ã—ãŸï¼
 pause
 exit /b
+
+:: === ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆä½œæˆç”¨é–¢æ•°ï¼ˆVBScriptä½¿ç”¨ï¼‰ ===
+:MakeShortcut
+set "VBS=%TEMP%\mkshortcut.vbs"
+> "%VBS%" (
+    echo Set oWS = WScript.CreateObject("WScript.Shell")
+    echo sLinkFile = WScript.Arguments(1)
+    echo Set oLink = oWS.CreateShortcut(sLinkFile)
+    echo oLink.TargetPath = WScript.Arguments(0)
+    echo oLink.Save
+)
+cscript //nologo "%VBS%" "%~1" "%~2"
+del "%VBS%"
+goto :eof
