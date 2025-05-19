@@ -1,15 +1,15 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-:: --- ç®¡ç†è€…æ¨©é™ã®ç¢ºèªã¨æ˜‡æ ¼ ---
+:: --- ŠÇ—ŽÒŒ ŒÀ‚ÌŠm”F‚Æ¸Ši ---
 >nul 2>&1 net session
 if %errorlevel% neq 0 (
-    echo ç®¡ç†è€…æ¨©é™ãŒå¿…è¦ã§ã™ã€‚å†å®Ÿè¡Œã—ã¾ã™...
+    echo ŠÇ—ŽÒŒ ŒÀ‚ª•K—v‚Å‚·BÄŽÀs‚µ‚Ü‚·...
     mshta "javascript:var shell = new ActiveXObject('Shell.Application'); shell.ShellExecute('%~f0', '', '', 'runas', 1);close();"
     exit /b
 )
 
-:: --- è¨­å®š ---
+:: --- Ý’è ---
 set "REPO=manju-summoner/YukkuriMovieMaker4"
 set "API=https://api.github.com/repos/%REPO%/releases/latest"
 set "INSTALLDIR=C:\Temp\YMM4"
@@ -18,19 +18,19 @@ set "EXE=%INSTALLDIR%\YukkuriMovieMaker4.exe"
 set "DESKTOP=%USERPROFILE%\Desktop"
 set "STARTMENU=%APPDATA%\Microsoft\Windows\Start Menu\Programs"
 
-:: --- ã™ã§ã«ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«æ¸ˆã¿ã‹ç¢ºèª ---
+:: --- ‚·‚Å‚ÉƒCƒ“ƒXƒg[ƒ‹Ï‚Ý‚©Šm”F ---
 if exist "%EXE%" (
-    set /p REINSTALL="ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«æ¸ˆã¿ã§ã™ã€‚å†ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã—ã¾ã™ã‹ï¼Ÿ (y/n): "
+    set /p REINSTALL="ƒCƒ“ƒXƒg[ƒ‹Ï‚Ý‚Å‚·BÄƒCƒ“ƒXƒg[ƒ‹‚µ‚Ü‚·‚©H (y/n): "
     if /i not "!REINSTALL!"=="y" (
-        echo ä¸­æ­¢ã—ã¾ã—ãŸã€‚
+        echo ’†Ž~‚µ‚Ü‚µ‚½B
         pause
         exit /b
     )
     rmdir /s /q "%INSTALLDIR%"
 )
 
-:: --- æœ€æ–°ãƒªãƒªãƒ¼ã‚¹URLã‚’curl + findstrã§å–å¾— ---
-echo [1/5] ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰URLã‚’å–å¾—ä¸­...
+:: --- ÅVƒŠƒŠ[ƒXURL‚ðcurl + findstr‚ÅŽæ“¾ ---
+echo [1/5] ƒ_ƒEƒ“ƒ[ƒhURL‚ðŽæ“¾’†...
 curl -s %API% > "%TEMP%\ymm_api.json"
 for /f "delims=" %%A in ('findstr /i "browser_download_url.*\.zip" "%TEMP%\ymm_api.json"') do (
     set "DOWNLOAD_LINE=%%A"
@@ -40,37 +40,37 @@ for /f "tokens=2 delims=:" %%B in ("!DOWNLOAD_LINE!") do (
 )
 set "URL=!URL:~2,-2!"
 
-:: --- ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ ---
-echo [2/5] æœ€æ–°ç‰ˆã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ä¸­...
+:: --- ƒ_ƒEƒ“ƒ[ƒh ---
+echo [2/5] ÅV”Å‚ðƒ_ƒEƒ“ƒ[ƒh’†...
 curl -L -o "%ZIPFILE%" "!URL!"
 
-:: --- è§£å‡ ---
-echo [3/5] è§£å‡ä¸­...
+:: --- ‰ð“€ ---
+echo [3/5] ‰ð“€’†...
 mkdir "%INSTALLDIR%" >nul
 tar -xf "%ZIPFILE%" -C "%INSTALLDIR%"
 
 del "%ZIPFILE%" >nul
 del "%TEMP%\ymm_api.json" >nul
 
-:: --- ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆä½œæˆç¢ºèª ---
-set /p MKDESKTOP="ãƒ‡ã‚¹ã‚¯ãƒˆãƒƒãƒ—ã«ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã‚’ä½œæˆã—ã¾ã™ã‹ï¼Ÿ (y/n): "
+:: --- ƒVƒ‡[ƒgƒJƒbƒgì¬Šm”F ---
+set /p MKDESKTOP="ƒfƒXƒNƒgƒbƒv‚ÉƒVƒ‡[ƒgƒJƒbƒg‚ðì¬‚µ‚Ü‚·‚©H (y/n): "
 if /i "%MKDESKTOP%"=="y" (
     call :MakeShortcut "%EXE%" "%DESKTOP%\YMM4.lnk"
 )
 
-set /p MKSTART="ã‚¹ã‚¿ãƒ¼ãƒˆãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã‚’ä½œæˆã—ã¾ã™ã‹ï¼Ÿ (y/n): "
+set /p MKSTART="ƒXƒ^[ƒgƒƒjƒ…[‚ÉƒVƒ‡[ƒgƒJƒbƒg‚ðì¬‚µ‚Ü‚·‚©H (y/n): "
 if /i "%MKSTART%"=="y" (
     call :MakeShortcut "%EXE%" "%STARTMENU%\YMM4.lnk"
 )
 
-:: --- èµ·å‹• ---
-echo [4/5] YMM4ã‚’èµ·å‹•ã—ã¾ã™...
+:: --- ‹N“® ---
+echo [4/5] YMM4‚ð‹N“®‚µ‚Ü‚·...
 start "" "%EXE%"
-echo [5/5] å®Œäº†ã—ã¾ã—ãŸï¼
+echo [5/5] Š®—¹‚µ‚Ü‚µ‚½I
 pause
 exit /b
 
-:: === ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆä½œæˆç”¨é–¢æ•°ï¼ˆVBScriptä½¿ç”¨ï¼‰ ===
+:: === ƒVƒ‡[ƒgƒJƒbƒgì¬—pŠÖ”iVBScriptŽg—pj ===
 :MakeShortcut
 set "VBS=%TEMP%\mkshortcut.vbs"
 > "%VBS%" (
