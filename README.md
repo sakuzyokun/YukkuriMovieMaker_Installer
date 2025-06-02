@@ -6,6 +6,7 @@
 ## 動作環境
 Windowsのみで起動します  
 Windows 8.1 以上で動作します  
+**PowerShell 5.0以上が必要です**  
 ### 調べ方
 1. windowsロゴキー+Rキー を押す
 2. 「winver」と入力
