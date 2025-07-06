@@ -2,7 +2,7 @@
 chcp 65001 > nul
 title ゆっくりムービーメーカー インストーラー
 echo ゆっくりムービーメーカー インストーラー
-echo Version 1.0.1
+echo Version 1.0.2
 
 :: フォルダ作成
 if not exist "C:\Temp" (
@@ -15,7 +15,7 @@ if not exist "C:\YMM" (
 :: ZIP ダウンロード
 echo.
 echo ZIPファイルをダウンロード中...
-powershell -Command "Invoke-WebRequest -Uri 'https://github.com/manju-summoner/YukkuriMovieMaker4/releases/download/v4.41.0.6/YukkuriMovieMaker_v4.41.0.6.zip' -OutFile 'C:\Temp\YukkuriMovieMaker.zip'"
+powershell -Command "Invoke-WebRequest -Uri 'https://github.com/manju-summoner/YukkuriMovieMaker4/releases/download/v4.43.0.4/YukkuriMovieMaker_v4.43.0.4.zip' -OutFile 'C:\Temp\YukkuriMovieMaker.zip'"
 
 :: 解凍
 echo.
@@ -38,7 +38,7 @@ powershell -Command "$s=(New-Object -COM WScript.Shell).CreateShortcut('%startme
 
 :: 起動
 echo.
-echo ゆっくりムービーメーカーを起動します...
+echo ゆっくりムービーメーカーを起動しています...
 start "" "C:\YMM\YukkuriMovieMaker.exe"
 
 echo.
