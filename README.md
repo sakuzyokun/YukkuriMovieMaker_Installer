@@ -15,7 +15,7 @@
 | 🔧 必須機能  | **PowerShell 5.0以上**       |
 | ❌ 非対応    | Windows 8以下、Mac、Linuxなど |
 
-### 🧐 PowerShellのバージョンを確認する方法
+### 🧐 Windowsのバージョンを確認する方法
 1. **Windowsロゴキー + Rキー** を押す  
 2. `winver` と入力して「OK」  
 3. 「Windows 8.1 / 10 / 11」と表示されていればOK！
@@ -24,7 +24,7 @@
 
 ## 📦 インストール方法（超かんたん）
 
-1. **ZIPをダウンロード**
+1. **BATファイルをダウンロード**
 2. `YukkuriMovieMaker_Installer.bat` を右クリック
 3. 「**管理者として実行**」をクリック！
 
